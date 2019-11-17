@@ -3,6 +3,7 @@ package database;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -30,6 +31,11 @@ class Crypter {
 		generateKeys();
 	}
 	
+	boolean match(char[] input, byte[] encryptedPass) {
+		// Compares the input with the encrypted password
+		return Arrays.equals(toBytes(input), decrypt(encryptedPass));
+	}
+	
 	byte[] encrypt(char[] input) {
 		try {
 			Cipher cipher = Cipher.getInstance(CRYPT_ALGORITHM);
@@ -42,6 +48,7 @@ class Crypter {
 	}
 	
 	byte[] decrypt(byte[] input) {
+		
 		try {
 			Cipher cipher = Cipher.getInstance(CRYPT_ALGORITHM);
 			cipher.init(Cipher.DECRYPT_MODE, privateKey);
@@ -61,12 +68,6 @@ class Crypter {
 		byte[] bytes = Arrays.copyOfRange(byteBuffer.array(), byteBuffer.position(), byteBuffer.limit());
 		Arrays.fill(byteBuffer.array(), (byte) 0); 
 		return bytes;
-	}
-	
-	
-	public static void main(String[] args) {
-		Crypter crypter = new Crypter();
-		
 	}
 	
 	RSAPublicKey getPublicKey() {
