@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -13,11 +14,10 @@ class Database {
 	//		DATABASE
 	//			-> DOCUMENTS
 	//				-> COURSE
-	//					-> CHAPTER
-	//						-> FILES
+	//					-> CHAPTER FILES
 	
 	private final File DOCUMENTS = new File("documents");
-	private File courses[];
+	private ArrayList<Course> courses;
 	
 	private File passwd = new File(".passwd");
 	private File users = new File(passwd, "users");
@@ -38,6 +38,41 @@ class Database {
 	public static void main(String[] args) {
 		Database db = new Database();
 	}
+	
+	
+	// Methods that regard session handling
+	
+	boolean courseNameOk(String courseName) {
+		// Returns false if a course name already exists
+		for (Course course : courses) {
+			if (course.getName().equals(courseName)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	void createCourse(String courseName) {
+		// Adds a new course
+		courses.add(new Course(DOCUMENTS, courseName));
+		
+	}
+	
+	Course getCourse(int courseNumber) {
+		return courses.get(courseNumber);
+	}
+	
+	boolean chapterOk(Course course, int chapter, String chapterName) {
+		// Ensures that the course doesn't contain any chapters with the
+		// same name or number
+		return course.containsChapter(chapter, chapterName);
+	}
+	
+	void createChapter(Course course, int chapter, String chapterName) {
+		// Adds a new chapter to the course
+		course.createChapter(chapter, chapterName);
+	}
+	
 	 
 	private void init() {
 		// Initializes the database, makes sure all files and folders that should exist exists
@@ -60,23 +95,14 @@ class Database {
 		
 		if (DOCUMENTS.exists()) {
 			
+			// Reads all the courses in root directory
+			
 			String courseFiles[] = DOCUMENTS.list();
+			courses = new ArrayList<Course>();
+			
 			for (int file = 0; file < courseFiles.length; file++) {
-				courses[file] = new File(DOCUMENTS, courseFiles[file]);
-			}
-			
-			for (File course : courses) {
-				String chapterFiles[] = course.list();
-				
-				for (int chapter = 0; chapter < chapterFiles.length; chapter++) {
-					 
-				}
-				
-			}
-			
-
-			
-			
+				courses.add(new Course(DOCUMENTS, courseFiles[file]));
+			}			
 		} 
 		else {
 			DOCUMENTS.mkdir();
