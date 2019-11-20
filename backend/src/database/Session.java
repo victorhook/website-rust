@@ -5,22 +5,20 @@ import java.util.StringTokenizer;
 
 public class Session implements Runnable {
 
-	private final int ID;
+	private final String user;
 	private final Scanner SCANNER = new Scanner(System.in);
-	private boolean sessionAlive;
 	private final String CREATE = "create", DELETE = "delete", RENAME = "rename",
 						 STATUS = "server", SERVICE = "service";
 	
 	private Database database;
 	
-	Session(Database database, int id) {
-		this.ID = id;
+	Session(Database database, String user) {
+		this.user = user;
 		this.database = database;
-		sessionAlive = true;
 	}
 	
 	public static void main(String[] args) {
-		new Thread(new Session(new Database(), 1)).start();
+		new Thread(new Session(new Database(), "victor")).start();
 	}
 	
 	private void showDatabase() {
@@ -30,10 +28,14 @@ public class Session implements Runnable {
 	@Override
 	public void run() {
 		
+		boolean sessionAlive = true;
 		StringTokenizer tokenizer;
 		String command = "";
-		 
+		
+		System.out.print(Message.startScreen(user, new Date()));
+		
 		while (sessionAlive) {
+			
 		
 			tokenizer = new StringTokenizer(SCANNER.nextLine());
 			
@@ -68,6 +70,19 @@ public class Session implements Runnable {
 		
 	}
 	
+	private void userDisplay(String msg) {
+		System.out.println(user + "$ " + msg);
+	}
+	
+	private void dispUser() {
+		System.out.println(user + "$ ");
+	}
+	
+	private void systemMsg(String msg) {
+		System.out.println(msg + "\n" + user + "$ ");
+	}
+	
+	
 	void create(StringTokenizer tokenizer, Scanner SCANNER) {
 		
 		final String COURSE = "course", CHAPTER = "chapter";
@@ -79,26 +94,40 @@ public class Session implements Runnable {
 		if (command.equals(COURSE)) {
 			
 			// If the course name is ok, a new course is added to the database
-			String courseName = tokenizer.nextToken();
-			if (database.courseNameOk(courseName)) {
-				database.createCourse(courseName);
+			try {
+				String courseName = tokenizer.nextToken();
+				if (database.courseNameOk(courseName)) {
+					database.createCourse(courseName);
+					systemMsg("Course succesfully added");
+				} else {
+					systemMsg("Course succesfully added");
+				}
+			} 
+			catch (NoSuchElementException e) {
+				systemMsg("Incorrect syntax. Type help for info");
 			}
+			
 			
 		} 	
 		else if (command.equals(CHAPTER)) {
 		
-			showChapters();
+			System.out.println("Which course would you like to add a chapter to?");
+			showCourses();
+			dispUser();
 			
 			tokenizer = new StringTokenizer(SCANNER.nextLine());
 			
 			int courseNumber = Integer.parseInt(tokenizer.nextToken());
 			Course course = database.getCourse(courseNumber);
 			
+			userDisplay("Enter chapter number and filepath");
+			
 			int chapter = Integer.parseInt(tokenizer.nextToken());
 			String chapterName = tokenizer.nextToken();
 			
-			if (database.chapterOk(course, chapter, chapterName)) {
+			if (database.chapterOk(course, chapter)) {
 				database.createChapter(course, chapter, chapterName);
+				
 			} else {
 				errorMessage("Chapter not okay");
 			}
@@ -132,6 +161,15 @@ public class Session implements Runnable {
 	
 	void showChapters() {
 		
+	}
+	
+	private void showCourses() {
+		StringBuilder courses = new StringBuilder();
+		int index = 0;
+		for (Course course : database.getAllCourses()) {
+			courses.append("[" + String.valueOf(index++) + "] " + course.getName() + "\n");
+		}
+		systemMsg(courses.toString());
 	}
 
 	

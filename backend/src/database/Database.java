@@ -32,8 +32,9 @@ class Database {
 		crypter = new Crypter();
 		init();
 		
-
 	}
+	
+
 	
 	public static void main(String[] args) {
 		Database db = new Database();
@@ -55,22 +56,24 @@ class Database {
 	void createCourse(String courseName) {
 		// Adds a new course
 		courses.add(new Course(DOCUMENTS, courseName));
-		
 	}
 	
 	Course getCourse(int courseNumber) {
 		return courses.get(courseNumber);
 	}
 	
-	boolean chapterOk(Course course, int chapter, String chapterName) {
-		// Ensures that the course doesn't contain any chapters with the
-		// same name or number
-		return course.containsChapter(chapter, chapterName);
+	ArrayList<Course> getAllCourses() {
+		return courses;
 	}
 	
-	void createChapter(Course course, int chapter, String chapterName) {
-		// Adds a new chapter to the course
-		course.createChapter(chapter, chapterName);
+	/** Ensures that a given chapter doesn't exists in the course */
+	boolean chapterOk(Course course, int chapter) {
+		return course.containsChapter(chapter);
+	}
+	
+	/** Creates a new chapter to the given course */
+	boolean createChapter(Course course, int chapter, String chapterName) {
+		return course.createChapter(chapter, chapterName);
 	}
 	
 	 
