@@ -1,5 +1,5 @@
 # These directories will not be included on git
 plan
-/.metadata/
-/.keys/
-/.passwd/
+backend/.keys/
+backend/.metadata/
+backend/.passwd/
