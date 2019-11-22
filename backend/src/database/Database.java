@@ -66,9 +66,51 @@ class Database {
 		return courses;
 	}
 	
+	
+	/** Retrives all chapters from the given course name and returns the names 
+	 *  Returns null if course can't be found*/
+	String[] getChapters(String courseName) {
+		
+		for (Course course : courses) {
+			if (course.getName().toLowerCase().equals(courseName.toLowerCase())) {
+				
+				ArrayList<File> chapters = course.getChapters();
+				String[] chapterStrings = new String[chapters.size()];
+				
+				for (int i = 0; i < chapters.size(); i++) {
+					chapterStrings[i] = chapters.get(i).getName();
+				}
+				return chapterStrings;
+				
+			}
+		}
+		return null;
+		
+	}
+	
+	boolean courseExists(String courseName) {
+		for (Course course : courses) {
+			if (course.getName().toLowerCase().equals(courseName.toLowerCase())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/** Deletes a given course and returns true if succesfull */
+	boolean deleteCourse(String courseName) {
+		for (Course course : courses) {
+			if (course.getName().equals(courseName)) {
+				courses.remove(course);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/** Ensures that a given chapter doesn't exists in the course */
-	boolean chapterOk(Course course, int chapter) {
-		return course.containsChapter(chapter);
+	boolean chapterOk(Course course, int chapter, String chapterPath) {
+		return course.chapterOk(chapter, chapterPath);
 	}
 	
 	/** Creates a new chapter to the given course */

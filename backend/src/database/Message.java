@@ -11,8 +11,7 @@ class Message {
 	static String startScreen(String user, Date time) {
 		
 		String msg = "====================================\n" + 
-				    formatter.format(time) + "\n" +
-				    user + "$ " ;
+				    formatter.format(time) + "\n";
 				     
 		return msg;
 	}

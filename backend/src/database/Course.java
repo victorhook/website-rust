@@ -32,6 +32,10 @@ class Course {
 	String getName() {
 		return ROOT.getName();
 	}
+	
+	ArrayList<File> getChapters() {
+		return chapters;
+	}
 
 	/** Makes a copy of the given chapter and saves it in the correct directory and 
 	 *  The old file is kept untouched. Returns false if something fails  */
@@ -45,6 +49,7 @@ class Course {
 			reader.close();
 		} 
 		catch (IOException e) {
+			e.printStackTrace();
 			return false;
 		}
 		
@@ -61,6 +66,14 @@ class Course {
 		}
 		
 		return true;
+	}
+	
+	/** Checks if the given chapter already exists or if the filepath can't be found */
+	boolean chapterOk(int chapter, String chapterPath) {
+		if (!containsChapter(chapter)) {
+			return new File(chapterPath).exists();
+		}
+		return false;
 	}
 
 	/** Checks if the given chapter exists in the course */

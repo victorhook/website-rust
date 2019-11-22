@@ -9,6 +9,7 @@ public class Session implements Runnable {
 	private final Scanner SCANNER = new Scanner(System.in);
 	private final String CREATE = "create", DELETE = "delete", RENAME = "rename",
 						 STATUS = "server", SERVICE = "service";
+	private final String COURSE = "course", CHAPTER = "chapter";
 	
 	private Database database;
 	
@@ -36,6 +37,7 @@ public class Session implements Runnable {
 		
 		while (sessionAlive) {
 			
+			prompt();
 		
 			tokenizer = new StringTokenizer(SCANNER.nextLine());
 			
@@ -44,14 +46,14 @@ public class Session implements Runnable {
 				command = tokenizer.nextToken();
 				
 				// If the command is quit or exit, the sessions is over
-				sessionAlive = (command.equals("quit") || command.equals("exit")) ? false : true;
+				sessionAlive = !(command.equals("quit") || command.equals("exit"));
 				
 				switch (command) {
 				case CREATE:
 					create(tokenizer, SCANNER);
 					break;
 				case DELETE:
-					delete(tokenizer);
+					delete(tokenizer, SCANNER);
 					break;
 				case RENAME:
 					rename(tokenizer);
@@ -70,24 +72,112 @@ public class Session implements Runnable {
 		
 	}
 	
-	private void userDisplay(String msg) {
-		System.out.println(user + "$ " + msg);
-	}
-	
-	private void dispUser() {
-		System.out.println(user + "$ ");
+	void prompt() {
+		System.out.print(user + "$ ");
 	}
 	
 	private void systemMsg(String msg) {
-		System.out.println(msg + "\n" + user + "$ ");
+		System.out.println(msg);
+		prompt();
+	}
+	
+	/** Users can delete courses or chapters 
+	 * @param tokenizer used to parse commands
+	 * @param SCANNER allow input stream to read commands from user
+	 * */
+	private void delete(StringTokenizer tokenizer, Scanner SCANNER) {
+		
+		String command = "";
+		try {
+			command = tokenizer.nextToken();
+			
+			if (command.equals(COURSE)) {
+				
+				System.out.println("Which course would you like to delete? Enter the course name");
+				showCourses();
+				
+				try {
+					String courseName = SCANNER.next();
+					
+					if (database.courseExists(courseName)) {
+						
+						systemMsg("Are you sure you want to delete the course? All the chapters will be removed\n" + 
+								  "y/n");
+						
+						command = SCANNER.next();
+						
+						if (command.toLowerCase().equals("y")) {
+							if (database.deleteCourse(courseName)) {
+								systemMsg("Course " + courseName + " removed");		
+							} else {
+								systemMsg("Failed to delete course");
+							}
+						}
+						return;
+					}
+					systemMsg("Failed to delete course " + courseName);
+				} 
+				catch (NoSuchElementException e) {
+					e.printStackTrace();
+				}
+				
+			}
+			
+			else if (command.equals(CHAPTER)) {
+				
+				System.out.println("From which course would you like to delete? Enter the course name");
+				showCourses();
+				
+				try {
+					String courseName = SCANNER.next();
+					
+					if (database.courseExists(courseName)) {
+						
+						System.out.println("Which chapter do you want to delete?");
+						showChapters(courseName);
+						
+						String chapter = SCANNER.next();
+						/*
+						if (database.deleteChapter(chapter, courseName)) {
+							systemMsg("Chapter " + chapter + " deleted from " + courseName);
+						}
+						*/
+						if (command.toLowerCase().equals("y")) {
+							if (database.deleteCourse(courseName)) {
+								systemMsg("Course " + courseName + " removed");		
+							} else {
+								systemMsg("Failed to delete course");
+							}
+						}
+						return;
+					}
+					systemMsg("Failed to delete course " + courseName);
+				} 
+				catch (NoSuchElementException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		
+			
+		} 
+		// Gets thrown if there is incorrect syntax in the command
+		catch (NoSuchElementException e) {
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	
-	void create(StringTokenizer tokenizer, Scanner SCANNER) {
+	/** Users can create new courses or chapters. These are automatically placed in the correct 
+	 * locations in the database, and named according to my naming convention
+	 * @param tokenizer used to parse commands
+	 * @param SCANNER allow input stream to read commands from user 
+	 */
+	private void create(StringTokenizer tokenizer, Scanner SCANNER) {
 		
-		final String COURSE = "course", CHAPTER = "chapter";
 		String command = "";
-		
 				
 		command = tokenizer.nextToken();
 		
@@ -98,50 +188,56 @@ public class Session implements Runnable {
 				String courseName = tokenizer.nextToken();
 				if (database.courseNameOk(courseName)) {
 					database.createCourse(courseName);
-					systemMsg("Course succesfully added");
-				} else {
-					systemMsg("Course succesfully added");
-				}
+					systemMsg("Course " + courseName + " succesfully added");
+				} 
 			} 
 			catch (NoSuchElementException e) {
-				systemMsg("Incorrect syntax. Type help for info");
+				systemMsg("~ Syntax is: create course \"COURSENAME\"");
 			}
 			
 			
 		} 	
 		else if (command.equals(CHAPTER)) {
 		
-			System.out.println("Which course would you like to add a chapter to?");
-			showCourses();
-			dispUser();
-			
-			tokenizer = new StringTokenizer(SCANNER.nextLine());
-			
-			int courseNumber = Integer.parseInt(tokenizer.nextToken());
-			Course course = database.getCourse(courseNumber);
-			
-			userDisplay("Enter chapter number and filepath");
-			
-			int chapter = Integer.parseInt(tokenizer.nextToken());
-			String chapterName = tokenizer.nextToken();
-			
-			if (database.chapterOk(course, chapter)) {
-				database.createChapter(course, chapter, chapterName);
+			try {
 				
-			} else {
-				errorMessage("Chapter not okay");
+				// Tries to add a new chapter to the selected course
+				
+				System.out.println("Which course would you like to add a chapter to?");
+				showCourses();
+				
+				int courseNumber = Integer.valueOf(SCANNER.nextLine());
+				Course course = database.getCourse(courseNumber);
+				
+				
+				systemMsg("Enter chapter number and filepath, seperated by white space");
+				
+				String input = SCANNER.nextLine();
+				
+				int chapter = Integer.parseInt(input.split(" ")[0]);
+				String chapterName = input.split(" ")[1];
+				
+				if (database.chapterOk(course, chapter, chapterName)) {
+					database.createChapter(course, chapter, chapterName);
+					System.out.println("Chapter " + chapter + " added to " + course.getName());
+				} else {
+					// Something went wrong with adding the chapter
+					System.out.println("~ Either the chapter already exists or the given filepath\n" + 
+							           "  is incorrect. Type help for help");
+				}
+			}
+			// Gets thrown if incorrect syntax is given, like an int instead of a string
+			catch (Exception e) {
+				
 			}
 			
 		}
-
-		
-		
 		
 	}
 
-	void delete(StringTokenizer tokenizer) {
-			
-		}
+
+	
+
 	
 	void rename(StringTokenizer tokenizer) {
 		
@@ -163,6 +259,23 @@ public class Session implements Runnable {
 		
 	}
 	
+	/** Retrives all the chapters from the given course and displays them */
+	private void showChapters(String courseName) {
+		StringBuilder message = new StringBuilder();
+		String[] chapters = database.getChapters(courseName);
+		
+		if (chapters != null) {
+			for (int i = 0; i < chapters.length; i++) {
+				message.append("[" + String.valueOf(i) + "] " + chapters[i++] + "\n");
+			}
+			systemMsg(message.toString());
+		} else {
+			systemMsg("Failed to find course");
+		}
+		
+	}
+	
+	/** Displays all courses */
 	private void showCourses() {
 		StringBuilder courses = new StringBuilder();
 		int index = 0;
