@@ -34,7 +34,8 @@ class Server implements Runnable {
 			
 				requestSocket = mainSocket.accept();
 				
-				threadPool.execute(new HttpRequest(requestSocket));
+				//threadPool.execute(new HttpRequest(requestSocket));
+				new Thread(new HttpRequest(requestSocket)).start();
 				
 			}
 			
@@ -48,7 +49,7 @@ class Server implements Runnable {
 	}
 	
 	public static void main(String[] args) {
-		new Thread(new Server(8800)).start();;
+		new Thread(new Server(8700)).start();
 	}
 	
 }

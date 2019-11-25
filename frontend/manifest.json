@@ -1,0 +1,10 @@
+{
+"short_name": "INGHelp",
+"name": "Ingenjörshjälp",
+"icons": {
+    "src": "images/favicon-96x96.png",
+    "type": "image/png",
+    "sizes": "96x96" 
+},
+"start_url": "html/index.html"
+}

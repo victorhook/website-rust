@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Solway&display=swap');
+
 html {
     position: relative;
     min-height: 100%;
+    font-family: 'Solway', serif;
 }
 
 body {
@@ -34,7 +37,7 @@ body {
     position: relative;
 }
 
-.navbar a::before {
+.navbar li a::before {
     content: "";
     position: absolute;
     width: 100%;
@@ -49,12 +52,58 @@ body {
     transition: all 0.4s ease-in-out 0s;
 }
 
-.navbar a:hover::before {
+.navbar li a:hover::before {
     visibility: visible;
     -webkit-transform: scaleX(1);
     transform: scaleX(1)
 }
 
+
+
+
+.course_div {
+    width: 70%;
+    text-align: center;
+    margin: 120px 15% auto 15%;
+}
+
+.course_div .warning_text {
+    margin: auto 25% 75px 25%;
+    text-align: left;
+    width: 50%;
+}
+
+.course_div img {
+    height: 20%;
+}
+
+.course_div .info_text {
+    margin: auto 25% 50px 25%;
+    text-align: left;
+    width: 50%;
+}
+
+.course_div li {
+    list-style: none;
+}
+
+.course_div a {
+    text-decoration: none;
+    color: black;
+    font-size: 2em;
+}
+
+
+.contant_div {
+    width: 70%;
+    text-align: center;
+    margin: 250px 15% auto 15%;
+}
+
+.contant_div .message {
+    width: 400px;
+    height: 200px;
+}
 
 
 .footer {
