@@ -34,9 +34,9 @@ const CONTENT_GIF: &str = "image/gif";
 const CONTENT_ICO: &str = "image/x-icon";
 
 /* Default paths */
-const REQUEST_BASE: &str = "frontend";
-const DEFAULT_FILE: &str = "frontend/html/index.html";
-const FILE_404: &str = "frontend/html/404.html";
+const REQUEST_BASE: &str = "../frontend";
+const DEFAULT_FILE: &str = "../frontend/html/index.html";
+const FILE_404: &str = "../frontend/html/404.html";
 
 /* Misc */
 const FINISHED: bool = true;

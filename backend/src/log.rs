@@ -30,7 +30,6 @@ pub struct Logger {
     level: LogLevel,
 }
 
-
 impl Logger {
 
     pub fn new(root: &str, level: LogLevel) -> Self {

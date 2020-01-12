@@ -19,7 +19,7 @@ const REQUEST_CAPACITY: u32 = 10;
 const IP: &str = "127.0.0.1";
 const PORT: &str = "9000";
 
-const LOG_BASE: &str = "log/";
+const LOG_BASE: &str = "../log/";
 
 fn main() -> io::Result<()> {
 
