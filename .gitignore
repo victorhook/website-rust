@@ -1,6 +1,4 @@
-# These directories will not be included on git
-plan
-backend/.keys/
-backend/.metadata/
-backend/.passwd/
-/.metadata/
+target/
+.vscode
+Cargo.lock
+Cargo.toml

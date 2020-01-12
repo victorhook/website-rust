@@ -1,0 +1,27 @@
+package inl3;
+
+public class Complex {
+
+	private double re, im;
+	
+	public Complex(double re, double im) {
+		this.re = re;
+		this.im = im;
+	}
+	
+	public double getRe() {
+		return re;
+	}
+
+	public double getIm() {
+		return im;
+	}
+
+	public double getAbs2() {
+		return re*re + im*im;
+	}
+	public void add(Complex c);
+	/** Multiplicerar detta tal med det komplexa talet c */
+	public void mul(Complex c);
+	
+}

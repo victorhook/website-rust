@@ -1,0 +1,222 @@
+package inl3;
+
+import java.awt.Color;
+import java.util.Arrays;
+import java.util.Random;
+
+public class Generator {
+
+	private final Color WHITE = Color.white, BLACK = Color.black;
+	private final int VERY_LOW = 128, LOW = 256, MEDIUM = 512, HIGH = 1024, VERY_HIGH = 2048;
+	private final float RED = (float) 0, YELLOW = (float) 1/6, GREEN = (float) 2 / 6, 
+						CYAN = (float) 3 / 6, BLUE = (float) 4 / 6, MAGNETA = (float) 5 / 6;
+	private final int PICK_RED = 0, PICK_YELLOW = 1, PICK_GREEN = 2, PICK_CYAN = 3, 
+					  PICK_BLUE = 4, PICK_MAGNETA = 5, PICK_SPECIAL = 6;
+	private final float[] COLOR_NUANCES = { RED, YELLOW, GREEN, CYAN, BLUE, MAGNETA };
+	private final int COLOR_RESOLUTION = 50;
+
+	private Color[] red, yellow, green, cyan, blue, magneta, selectedColors;
+	private Color[][] colors;
+
+	private boolean colorSelected;
+
+	public Generator() {
+		// Skapar tre olika färgkartor som kan användas om användaren vill rita med färg
+
+		colors = new Color[COLOR_NUANCES.length + 1][COLOR_RESOLUTION];
+		for (int color = 0; color < COLOR_NUANCES.length; color++) {
+			colors[color] = makeColors(COLOR_NUANCES[color], COLOR_RESOLUTION);
+		}
+		colors[PICK_SPECIAL] = makeSpecialColor(COLOR_RESOLUTION);
+
+	}
+
+	/** Ritar en bild i fönstret i användargränssnittet gui */
+	public void render(MandelbrotGUI gui) {
+
+		gui.disableInput();
+		Complex[][] complex = mesh(gui.getMinimumReal(), gui.getMaximumReal(), gui.getMinimumImag(),
+				gui.getMaximumImag(), gui.getWidth(), gui.getHeight());
+
+		String iterationText = gui.getIterationText();
+		String colorScaleText = gui.getColorScaleText();
+
+		if (gui.getMode() == gui.MODE_COLOR) { 					// Användaren vill använda färg
+			colorSelected = true; 								// Om ingen färg är vald, blir default svart
+		}
+		selectedColors = findColor(colorScaleText); 			// Väljer rätt färg utifrån vad användaren ville ha (Default är röd)
+
+		// Antal iteration som ska göras vid varje beräkning
+		int iterations = (iterationText.length() > 0) ? Integer.valueOf(iterationText)
+				: Mandelbrot.MANTELBROT_ITERATIONS;
+
+		int resolution = adjustResolution(gui.getResolution());
+		int resolutionX = gui.getWidth() / resolution; // Hur många iterationssteg som ska göra i WIDTH (x-led)
+		int resolutionY = gui.getHeight() / resolution; // Hur många iterationssteg som ska göra i HEIGHT (y-led)
+		int padding = resolution - 1; // Anger hur stora steg som ska göras mellan varje indexering i complex[][]
+
+		Color[][] picture = new Color[resolutionY][resolutionX];// Skapar en bild som ska användas för att rita
+
+		int row = 0, col; // Används för att indexera picture-vektorn
+		int rowIndex = padding / 2, colIndex; // Används för att indexera complex-vektorn
+		double re, im; // Används endast för del 1, då jag ritade cirklar
+
+		int divergeAmmount; // Används för att ange hur mycket mandelbrottsmängden divergerar
+
+		while (row < resolutionY) { // Huvudloopen för beräkningarna
+
+			col = 0;
+			colIndex = padding / 2;
+
+			while (col < resolutionX) {
+
+				if (colorSelected) {
+					// Nuvarande komplext tal Antal iterationer
+					divergeAmmount = calculateMandelbrotColor(complex[rowIndex][colIndex], iterations);
+					picture[row][col] = selectedColors[divergeAmmount]; // Målar med färg
+				} else {
+					if (calculateMandelbrotBW(complex[rowIndex][colIndex], iterations)) {
+						picture[row][col] = BLACK;
+					} else {
+						picture[row][col] = WHITE;
+					}
+				}
+
+				colIndex += padding + 1;
+				col++;
+			}
+
+			rowIndex += padding + 1;
+			row++;
+
+		}
+
+		gui.putData(picture, resolution, resolution);
+		gui.enableInput();
+
+	}
+
+	private boolean calculateMandelbrotBW(Complex c, int iterations) {
+
+		Complex z = new Complex(0, 0);
+		int counter = 0;
+
+		while (counter < iterations && z.getAbs2() <= 4) {
+			z.mul(z);
+			z.add(c);
+			counter++;
+		}
+
+		return counter >= iterations;
+	}
+
+	/** Beräknar en följ av komplexa tal med Mandelbrotformeln */
+	private int calculateMandelbrotColor(Complex c, int iterations) {
+
+		Complex z = new Complex(0, 0);
+		int counter = 0;
+
+		while (counter < iterations && z.getAbs2() <= Integer.MAX_VALUE) {
+			z.mul(z);
+			z.add(c);
+			counter++;
+		}
+
+		return counter % COLOR_RESOLUTION;
+	}
+
+	/**
+	 * Skapar en matrix där varje element är ett komplext tal som har rätt
+	 * koordinater
+	 */
+	private Complex[][] mesh(double minRe, double maxRe, double minIm, double maxIm, int width, int height) {
+
+		Complex[][] matrice = new Complex[height][width];
+		double stepSizeRe = Math.abs(maxRe - minRe) / width;
+		double stepSizeIm = Math.abs(maxIm - minIm) / height;
+
+		for (int row = 0; row < height; row++) {
+
+			for (int col = 0; col < width; col++) {
+
+				matrice[row][col] = new Complex(minRe + (col * stepSizeRe), maxIm - (row * stepSizeIm));
+			}
+
+		}
+		return matrice;
+	}
+
+	/**
+	 * Justerar upplösningsvärdet för att kunna göra korrekta beräkningar vid såväl
+	 * iterationerna som "stepsize" vid genomgång av matrisen.
+	 */
+	private int adjustResolution(int resolution) {
+		switch (resolution) {
+		case VERY_HIGH:
+			resolution = 1;
+			break;
+		case HIGH:
+			resolution = 3;
+			break;
+		case MEDIUM:
+			resolution = 5;
+			break;
+		case LOW:
+			resolution = 7;
+			break;
+		case VERY_LOW:
+			resolution = 9;
+			break;
+		}
+		return resolution;
+	}
+	
+	
+
+	/** Väljer rätt färg utifrån vad användaren har valt. Röd är default */
+	private Color[] findColor(String color) {
+		
+		Color[] chosenColor;
+		System.out.println(color);
+		if (color.toLowerCase().startsWith("y")) {
+			chosenColor = colors[PICK_YELLOW];
+		} else if (color.toLowerCase().startsWith("g")) {
+			chosenColor = colors[PICK_GREEN];
+		} else if (color.toLowerCase().startsWith("c")) {
+			chosenColor = colors[PICK_CYAN];
+		} else if (color.toLowerCase().startsWith("b")) {
+			chosenColor = colors[PICK_BLUE];
+		} else if (color.toLowerCase().startsWith("m")) {
+			chosenColor = colors[PICK_MAGNETA];
+		} else if (color.toLowerCase().startsWith("r")) {
+			chosenColor = colors[PICK_RED];
+		} else {
+			chosenColor = colors[PICK_SPECIAL];
+		}
+		return chosenColor;
+		
+	}
+	
+	/** Skapar en randomiserad färgkarta som används som default  */
+	private Color[] makeSpecialColor(int colorResolution) {
+		Color[] colors = new Color[colorResolution];
+		Random rand = new Random();
+		for (int i = 0; i < colorResolution; i++) {
+			colors[i] = Color.getHSBColor(rand.nextFloat(), 1f, i / colorResolution);
+			System.out.println(rand.nextFloat());
+		}
+		System.out.println(Arrays.toString(colors));
+		return colors;
+	}
+
+	/** Skapar en färgkarta med den givna färgnyansen */
+	private Color[] makeColors(float color, int colorResolution) {
+
+		Color[] colors = new Color[colorResolution];
+		for (float i = 0; i < colorResolution; i++) {
+			colors[(int) i] = Color.getHSBColor(color, 1f, i / colorResolution);
+		}
+		return colors;
+	}
+
+}

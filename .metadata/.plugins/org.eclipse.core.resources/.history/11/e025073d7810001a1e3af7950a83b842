@@ -1,0 +1,34 @@
+package inl3;
+
+public class Mandelbrot {
+
+	public static void main(String[] args) {
+		
+		MandelbrotGUI gui = new MandelbrotGUI();
+		Generator gen = new Generator();
+		boolean guiAlive = true;
+		
+		while (guiAlive) {
+			switch(gui.getCommand()) {
+			
+			case MandelbrotGUI.RESET:
+				gui.resetPlane();
+				gui.clearPlane();
+				break;
+			case MandelbrotGUI.RENDER:
+				gen.render(gui);
+				break;
+			case MandelbrotGUI.ZOOM:
+				break;
+			case MandelbrotGUI.QUIT:
+				System.exit(0);
+				break;
+			default:
+				break;
+			
+			}
+		}
+		
+	}
+	
+}

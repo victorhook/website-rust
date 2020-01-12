@@ -1,0 +1,10 @@
+package inl3;
+
+public class Mandelbrot {
+
+	public static void main(String[] args) {
+		MandelbrotGUI gui = new MandelbrotGUI();
+		
+	}
+	
+}

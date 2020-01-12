@@ -1,0 +1,61 @@
+package inl3;
+
+public class Complex {
+
+	private double re, im;
+	
+	public Complex(double re, double im) {
+		this.re = re;
+		this.im = im;
+	}
+	
+	public double getRe() {
+		return re;
+	}
+
+	public double getIm() {
+		return im;
+	}
+
+	public double getAbs2() {
+		return re*re + im*im;
+	}
+	
+	public void add(Complex c) {
+		this.re += c.getRe();
+		this.im += c.getIm();
+	}
+
+	public void mul(Complex c) {
+		double tempRe = this.re * c.getRe() - this.getIm() * c.getIm(); 
+		this.im = this.re * c.getIm() + this.getIm() * c.getRe();
+		this.re = tempRe;
+	}
+	
+	public String toString() {
+		return re + " + " + im + "i";
+	}
+	
+	public static void main(String[] args) {
+		Complex a = new Complex(-0.4, 0.4);
+		Complex b = new Complex(1, 2);
+
+		mandelbrot(a);
+
+		
+		
+	}
+	
+	static void mandelbrot(Complex c) {
+		Complex z = new Complex(0,0);
+		
+		for (int i = 0; i < 200; i++) {
+			z.mul(z);
+			z.add(c);
+		}
+		
+		System.out.println(z);
+		
+	}
+	
+}

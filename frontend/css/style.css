@@ -58,6 +58,34 @@ body {
     transform: scaleX(1)
 }
 
+.main_page {
+    font-size: 1.5em;
+    text-align: center;
+    margin-top: 300px;
+}
+
+.main_page p {
+    margin-bottom: 50px;
+}
+
+.main_page button {
+    border: none;
+    color: black;
+    padding: 15px 30px;
+    background: rgba(156, 155, 151, 0.726);
+    font-size: 30px;
+    transition: color 0.3s;
+    transition: border 0.3s;
+    border:  rgba(156, 155, 151, 0.726) solid 1px;
+    border-radius: 3%;
+    outline: none;
+}
+
+.main_page button:hover {
+    color: white;
+    border: black solid 1px;
+}
+
 
 
 

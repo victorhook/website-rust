@@ -1,0 +1,43 @@
+package inl3;
+
+public class Mandelbrot {
+
+	public static final int MANTELBROT_ITERATIONS = 200;
+	
+	public static void main(String[] args) {
+		
+		MandelbrotGUI gui = new MandelbrotGUI();
+		Generator gen = new Generator();
+		boolean guiAlive = true;
+		boolean paintingGenerated = false;
+		
+		while (guiAlive) {
+			switch(gui.getCommand()) {
+			
+			case MandelbrotGUI.RESET:
+				paintingGenerated = false;
+				gui.resetPlane();
+				gui.clearPlane();
+				break;
+			case MandelbrotGUI.RENDER:
+				paintingGenerated = true;
+				gen.render(gui);
+				break;
+			case MandelbrotGUI.ZOOM:
+				if (paintingGenerated) {
+					gen.render(gui);
+				}
+				
+				break;
+			case MandelbrotGUI.QUIT:
+				System.exit(0);
+				break;
+			default:
+				break;
+			
+			}
+		}
+		
+	}
+	
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      Call PHP File via AJAX
+    </title>
+    <script>
+    function ajaxcall() {
+      // GET DATA
+      var data = new FormData();
+      data.append('name', document.getElementById("user-name").value);
+      data.append('email', document.getElementById("user-email").value);
+ 
+      // AJAX CALL
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', "1b-ajax.php", true);
+      xhr.onload = function () {
+        var res = JSON.parse(this.response);
+        if (res.status) {
+          // OK - DO SOMETHING
+          alert(res.message);
+        } else {
+          // ERROR - DO SOMETHING
+          alert(res.message);
+        }
+      };
+      xhr.send(data);
+      return false;
+    }
+    </script>
+  </head>
+  <body>
+    <form onsubmit="return ajaxcall();">
+      <label for="user-name">Name</label>
+      <input type="text" id="user-name" required/>
+      <label for="user-email">Email</label>
+      <input type="email" id="user-email" required/>
+      <input type="submit" value="Save"/>
+    </form>
+  </body>
+</html>
