@@ -1,4 +1,6 @@
 Cargo.lock
 Cargo.toml
 log
-.metadata
+.metadata/
+.vscode/
+log/

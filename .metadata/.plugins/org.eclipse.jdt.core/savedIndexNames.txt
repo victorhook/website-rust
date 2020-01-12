@@ -1,5 +1,0 @@
-INDEX VERSION 1.131+/home/victor/coding/website/.metadata/.plugins/org.eclipse.jdt.core
-1476245916.index
-4148974806.index
-258608771.index
-646308851.index
