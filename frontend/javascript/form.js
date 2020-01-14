@@ -1,8 +1,8 @@
 const BACKEND_SERVER = '../../src/main.rs';
 const END_OF_MSG = "\r\n\r\n";
+// Binds the event function to the submit button
+document.getElementById('submit_btn').addEventListener('click', submit);
 
-const btn = document.getElementById('submit_btn');
-btn.addEventListener('click', submit);
 
 function submit(event) {
     

@@ -87,8 +87,6 @@ body {
 }
 
 
-
-
 .course_div {
     width: 70%;
     text-align: center;
@@ -122,16 +120,45 @@ body {
 }
 
 
-.contant_div {
+.contact {
     width: 70%;
     text-align: center;
-    margin: 250px 15% auto 15%;
+    margin: 220px 15% auto 15%;
 }
 
-.contant_div .message {
+.contact .message {
     width: 400px;
-    height: 200px;
+    height: 150px;
 }
+
+.contact .small_boxes input {
+    margin: 10px;
+}
+
+.contact #title {
+    margin-bottom: 60px;
+}
+
+.contact #submit_btn {
+    font-family: 'Solway', serif;
+    font-size: 20px;
+    width: 100px;
+    height: 40px;
+    background:  rgba(156, 155, 151, 0.726);
+    border: solid 1px gray;
+    transition: color .4s, border .4s;
+}
+
+.contact #submit_btn:hover {
+    color: white;
+    transform: rotate(20);
+    border: solid 1px white;
+}
+
+
+
+
+
 
 
 .footer {

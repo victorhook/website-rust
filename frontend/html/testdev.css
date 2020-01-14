@@ -1,0 +1,33 @@
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 5rem;
+}
+
+
+
+p::before {
+    content: '';
+    background: red;
+    display: block;
+    height: 5px;
+    transition: background .5s;
+}
+
+p::after {
+    content: '';
+    background: red;
+    display: block;
+    height: 5px;
+    transition: background .5s;
+}
+
+p:hover::before {
+    background: blue;
+}
+
+p:hover::after {
+    background: blue;
+}

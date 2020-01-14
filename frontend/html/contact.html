@@ -33,27 +33,27 @@
         </footer>
     </div>
 
-    <div class="contant_div">
+    <div class="contact">
     
+        <p id="title">
+            Har du några synpunkter på hemsidan, eller har du någon annan fråga? <br>
+            Släng iväg ett meddelande!
+        </p>
 
-        <form action="../javascript/main.js" method="post">
-                <p>Namn</p>
-                <input type="text" id="name">
-
-                <p>Mail</p>
-                <input type="email" id="email">
-
-                <p>Meddelande</p>
-                <input type="text" class="message" id ="message"> <br>
-
-                <input type="submit" value="Skicka">
-                <button id="fn">CLICK ME!</button>
+        <form>
+            <div class="small_boxes">
+                Namn <input type="text" id="name"> <br>
+                Email <input type="email" id="email"> <br>
+            </div>
+            
+            <p>Meddelande</p>
+            <textarea class="message" id="message"></textarea>
         </form>
+        <button id="submit_btn" disabled>Skicka</button>
 
     </div>
 
-
-    <script type="text/javascript" src="../javascript/main.js"></script>
+    <script type="text/javascript" src="../javascript/form.js"></script>
 
 </body>
 </html>
