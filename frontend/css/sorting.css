@@ -1,0 +1,13 @@
+body {
+    margin: 0;
+    text-align: center;
+}
+
+canvas {
+    border: solid 1px black;
+    margin-bottom: 30px;
+}
+
+.sorting {
+    margin-top: 150px;
+}
