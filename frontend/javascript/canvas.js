@@ -97,75 +97,36 @@ const WIDTH = 700;
 const HEIGHT = 500;
 
 document.querySelector('button').addEventListener('click', shuffle);
-document.getElementById('debug').addEventListener('click', animate);
+document.getElementById('sort').addEventListener('click', bubbleSort);
 
 const canv = document.querySelector('canvas');
 canv.width = WIDTH;
 canv.height = HEIGHT;
 c = canv.getContext('2d');
 
-const FILL_COLOER = 'blue';
-const BORDER_COLOR = 'black';
+const FILL_COLOR = 'blue';
 const HIGHLIGHT_COLOR = 'red';
 const TEXT_COLOR = 'black';
 
+
+
+
+//let left = new Number(20, 50, 100, 500);
+//let right = new Number(20, 50, 200, 500);
+//right.draw();
+//left.draw();
+
 let min = 10;
 let max = 100;
-let numbers = 20;
+let numbers = 10;
 
-//let arr = createArray(min, max, numbers);
-//display();
-
-
-class BubbleSort {
-    /* 
-    */
-    FINAL_STATE = 10;
-    
-    constructor() {
-        this.state = 0;
-    }
-
-    next() {
-        this.state = (this.state < FINAL_STATE) ? this.state + 1 : 0;
-    }
-
-}
-
-
-
-let left = new Number(20, 50, 100, 500);
-let right = new Number(20, 50, 200, 500);
-
-right.draw();
-left.draw();
-
-let speed = 2;
+let speed = 7;
 let low = null;
 let high = null;
 let goalX = null;
 
 
-function animate(timestamp) {
-    let id = requestAnimationFrame(animate);
-    if (low.x >= goalX) {
-        cancelAnimationFrame(id);
-    }
-    else {
-        low.x += speed;
-        high.x -= speed;
-        c.clearRect(0, 0, WIDTH, HEIGHT);
-        low.draw();
-        high.draw();
-    }
-}
 
-function switchPos(rect1, rect2) {
-    low = rect1.x < rect2.x ? rect1 : rect2;
-    high = rect1.x > rect2.x ? rect1 : rect2;
-    goalX = high.x;
-    animate();
-}
 
 //switchPos(left, right);
 
@@ -180,7 +141,7 @@ function shuffle() {
     display();
 }
 
-function bubbleSort() {
+function _bubbleSort() {
     for (i = 0; i < arr.length - 1; i++) {
         arr[i].mark();
 
@@ -200,56 +161,119 @@ function bubbleSort() {
     }
 }
 
-/* The total ammount of iterations is given by
-   (n - 1) + Sum^n_k=1 (n - k)              */
-function getIterations(arr) {
-    let n = arr.length;
-    let iterations = n - 1;
-    for (k = 1; k < n; k++) {
-        iterations += n - k;
-    }
-    return iterations;
-}
+
 
 class BubbleStates {
 
     constructor(arr) {
-        console.log("Hey");
-        this.states = getIterations(arr);
+        this.arr = arr;
+        this.states = this.getIterations(this.arr);
+        this.n = arr.length - 1;
+        this.i = 0;
+        this.k = 0;
+        this.finished = false;
+
+        this.rect1 = this.arr[this.i];
+        this.rect2 = this.arr[this.k];
+        this.oldRect1 = this.rect1;
+        this.oldRect2 = this.rect2;
+        this.compare = false;
+
+    }
+
+    async advance() {
+
+        /* The algorithm bellow updates the variables i & k accordingly:
+                    for i = 0; i < n - 1; i++ 
+                        for k = i + 1; k < n; k++
+        */
+        if (!this.finished) {
+
+            if (this.compare) {
+                if (this.rect2.value < this.rect1.value) {
+                    await this.switchPos();
+                }
+                this.compare = false;
+            } 
+            else {
+                if (this.i < this.n) {
+                    this.oldRect2 = this.rect2;
         
-        console.log(this.states);
+                    if (this.k == this.n) {
+                        this.oldRect1 = this.rect1;
+                        this.i++;
+                        this.k = this.i + 1;
+                    }
+                    else {
+                        this.k++;
+                    }
+                } 
+                else {
+                    this.finished = true;
+                    return;
+                }
+                this.compare = true;
+            }
+
+            this.oldRect1.unHighlight();
+            this.oldRect2.unHighlight();
+
+            this.rect1 = this.arr[this.i];
+            this.rect2 = this.arr[this.k];
+            this.rect1.highlight();
+            this.rect2.highlight();
+            c.stroke();
+       }
+
+    }
+
+    async switchPos() {
+        this.arr[this.i] = this.rect2;
+        this.arr[this.k] = this.rect1;
+        low = this.rect1.x < this.rect2.x ? this.rect1 : this.rect2;
+        high = this.rect1.x > this.rect2.x ? this.rect1 : this.rect2;
+        goalX = high.x;
+        animate();
+    }
+
+    /* The total ammount of iterations is given by
+    (n - 1) + Sum^n_k=1 (n - k)              */
+    getIterations(arr) {
+        let n = arr.length;
+        let iterations = n - 1;
+        for (let k = 1; k < n; k++) {
+            iterations += n - k;
+        }
+        return iterations;
     }
 
 }
 
-let arr = [];
-for (i = 0; i < 30; i++) {
-    arr.push(3);
-}
-console.log(getIterations(arr));
+class Number {
 
-function display() {
-    c.clearRect(0, 0, WIDTH, HEIGHT);
-    for (const rectangle of arr) {
-        rectangle.draw();
+    constructor(value, width, x, y) {
+        this.value = value;
+        this.width = width;
+        this.height = -this.value * 3;
+        this.x = x;
+        this.y = y;
+        this.highlighted = false;
     }
-}
 
-function Number(value, width, x, y) {
-    this.value = value;
-    this.width = width;
-    this.height = -this.value * 3;
-    this.x = x;
-    this.y = y;
-    this.marked = false;
-    
-    this.draw = function() {
+    highlight() {
+        this.highlighted = true;
+        this.draw();
+    }
+
+    unHighlight() {
+        this.highlighted = false;
+        this.draw();
+    }
+
+    draw() {
         c.beginPath();
-        c.fillStyle = FILL_COLOER;
+        c.fillStyle = this.highlighted ? HIGHLIGHT_COLOR : FILL_COLOR;
         c.fillRect(this.x, this.y, this.width, this.height);
-        c.lineWidth = 3;
-        c.strokeStyle = this.marked ? HIGHLIGHT_COLOR : BORDER_COLOR;
-        c.strokeRect(this.x, this.y, this.width, this.height);
 
         c.fillStyle = TEXT_COLOR;
         c.textAlign = 'center';
@@ -260,6 +284,46 @@ function Number(value, width, x, y) {
     }
 }
 
+function animate(timestamp) {
+    let id = requestAnimationFrame(animate);
+    if (low.x >= goalX) {
+        cancelAnimationFrame(id);
+    }
+    else {
+        low.x += speed;
+        high.x -= speed;
+        c.clearRect(0, 0, WIDTH, HEIGHT);
+        for (const rect of arr) {
+            rect.draw();
+        }
+        c.stroke();
+    }
+}
+
+
+
+let arr = createArray(min, max, numbers);
+display();
+let bubble = new BubbleStates(arr);
+
+function ad() {
+    bubble.advance();
+}
+
+
+
+
+document.getElementById('debug').addEventListener('click', ad);
+
+function display() {
+    c.clearRect(0, 0, WIDTH, HEIGHT);
+    for (const rectangle of arr) {
+        rectangle.draw();
+    }
+}
+
+
+
 function createArray(min, max, numbers) {
     let arr = [];
     for (i = 0; i < numbers; i++) {
@@ -267,4 +331,10 @@ function createArray(min, max, numbers) {
         arr.push(new Number(randomNumber, WIDTH / numbers, i * WIDTH / numbers, HEIGHT));
     }
     return arr;
+}
+
+async function bubbleSort() {
+    for (i = 0; i < 10; i++) {
+        bubble.advance();
+    }   
 }
