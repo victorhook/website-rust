@@ -1,170 +1,79 @@
-/* With canvas you can draw: 
-    - Rectangles
-    - Lines
-    - Arcs / Circles
-    - Bezier Curves
-    - Images
-    - Text
-*/
-
-//var canvas = document.querySelector('canvas');
-//canvas.width = window.innerWidth;
-//canvas.height = window.innerHeight;
-//var c = canvas.getContext('2d');
-
-/* -- Rectangles x, y, width, height -- 
-c.fillStyle = 'rgba(255, 0, 0, 0.5)'
-c.fillRect(100, 100, 50, 50);
-c.fillStyle = 'rgba(0, 255, 0, 0.5)'
-c.fillRect(300, 100, 50, 50);
-*/
-
-/* -- Line --
-c.beginPath();
-c.moveTo(50, 300);
-c.lineTo(300, 300);
-c.strokeStyle = "#000000";
-c.lineTo(300, 200);
-c.strokeStyle = "#555555";
-c.stroke();
-*/
-
-/* -- Arc / Circle --
-for (i = 0; i < 100; i++) {
-    var x = window.innerWidth * Math.random();
-    var y = window.innerHeight * Math.random();
-    var r = Math.random() * 255;
-    var g = Math.random() * 255;
-    var b = Math.random() * 255;
-    c.strokeStyle = 'rgba(' + r + ", " + g + ',' + b + ', 0.8';
-    c.beginPath();
-    c.arc(x, y, 15, 0, Math.PI * 2, false);
-    c.stroke();
-}
-*/
-
-/*
-
-function Circle(x, y, dx, dy, radius) {
-    this.x = x;
-    this.y = y;
-    this.dx = dx;
-    this.dy = dy;
-    this.radius = radius;
-
-    this.draw = function() {
-        c.beginPath();
-        c.arc(this.x, this.y, this.radius, Math.PI * 2, false);
-        c.strokeStyle = 'blue';
-        c.stroke();
-    }
-
-    this.update = function() {
-
-        if (this.x + this.radius >= innerWidth || this.x - this.radius <= 0) {
-            this.dx = -this.dx;
-        }
-
-        if (this.y + this.radius >= innerHeight || this.y - this.radius <= 0) {
-            this.dy = -this.dy;
-            
-        }
-        this.x += this.dx;
-        this.y += this.dy;
-    }
-}
-*/
-/*
-for (i = 0; i < 20; i++) {
-    let x = innerWidth * Math.random();
-    let y = innerHeight * Math.random();
-    let dx = SPEED * (.5 - Math.random());
-    let dy = SPEED * (.5 - Math.random());
-    circles.push(new Circle(x, y, dx, dy, RADIUS));
-}
-
-function animate() {
-    requestAnimationFrame(animate);
-    c.clearRect(0, 0, innerWidth, innerHeight);
-    for (const circle of circles) {
-        circle.draw();
-        circle.update();
-    }
-}
-*/
+/* -------- CONSTANS ---------- */
 
 const WIDTH = 700;
 const HEIGHT = 500;
+const FILL_COLOR = 'gray';
+const HIGHLIGHT_COLOR = 'red';
+const TEXT_COLOR = 'black';
+const SPEED = 40;
+const ANIMATION_SPEED_LIMIT = 60;
+const DEFAULT_DELAY = 50;
 
+const bubbleSortJavaText = "for (int i = 0; i < n - 1; i++) {\n" + 
+                            "    for (int j = i + 1; j < n; j++) {\n" + 
+                            "        if (array[j] < array[i]) {\n" + 
+                            "            int temp = array[i];\n" + 
+                            "            array[i] = array[j];\n" + 
+                            "            array[j] = temp;\n" + 
+                            "        }\n" + 
+                            "    }\n" + 
+                            "}";
+
+/* Adding event-handlers */
 document.querySelector('button').addEventListener('click', shuffle);
 document.getElementById('sort').addEventListener('click', bubbleSort);
 
+const sizeSlider = document.getElementById('sizeSlider');
+sizeSlider.addEventListener('change', sizeSliderCallback);
+
+const valueSlider = document.getElementById('valueSlider');
+valueSlider.addEventListener('change', valueSliderCallback);
+
+const speedSlider = document.getElementById('speedSlider');
+speedSlider.addEventListener('change', speedSliderCallback);
+
+//document.getElementById('debug').addEventListener('click', ad);
+
+/* canv is the main object for painting and the variable 'c'
+   is the 2D-context which is used for updating graphics. */
 const canv = document.querySelector('canvas');
 canv.width = WIDTH;
 canv.height = HEIGHT;
 c = canv.getContext('2d');
 
-const FILL_COLOR = 'blue';
-const HIGHLIGHT_COLOR = 'red';
-const TEXT_COLOR = 'black';
+/* Setting textbox values, temporary ATM */
+const textBox = document.querySelector('textarea');
+textBox.rows = 10;
+textBox.cols = 50;
+textBox.value = bubbleSortJavaText;
+textBox.disabled = true;
 
+/* -------- GLOBAL VARIABLES ---------- */
+let min = 10;                 // Minimum value for a number
+let max = 100;                // Maximum value for a number
+let arraySize = sizeSlider.value;   // Total number of items in the array.
+let numberTextSize = 20;
 
+// The speed of how fast the switching of two object occurs
+let speed = speedSlider.value;
+speed = 40;
+// Animation delay
+let delay = DEFAULT_DELAY;
 
-
-//let left = new Number(20, 50, 100, 500);
-//let right = new Number(20, 50, 200, 500);
-//right.draw();
-//left.draw();
-
-let min = 10;
-let max = 100;
-let numbers = 10;
-
-let speed = 7;
+// low, high and goalX are used when two objects switch place.
+// There must indeed be a smoother way for this, but it works forn now 
 let low = null;
 let high = null;
 let goalX = null;
 
-
-
-
-//switchPos(left, right);
-
-
-function shuffle() {
-    for (i = arr.length - 1; i > 0; i--) {
-        let randomNumber = Math.floor(Math.random() * (i));
-        let temp = arr[i].x;
-        arr[i].x = arr[randomNumber].x;
-        arr[randomNumber].x = temp;
-    }
-    display();
-}
-
-function _bubbleSort() {
-    for (i = 0; i < arr.length - 1; i++) {
-        arr[i].mark();
-
-        for (k = i + 1; k < arr.length; k++) {
-            arr[k - 1].unmark();
-            arr[k].mark()
-
-            if (arr[k].value < arr[i].value) {
-                let temp = arr[i];
-
-                arr[i] = arr[k];            // SWITCH
-                arr[k] = arr[i];            // SWITCH
-            }
-        }
-
-        arr[i].unmark();
-    }
-}
-
-
+/* ------- CLASSES --------- */
 
 class BubbleStates {
-
+    // This is quite a temporary fix, but the class is responsible for
+    // behaving like a bubblesort. It works like a State machine, where
+    // each "advance()" moves the algorithm one step forward.
+    
+    // TODO: Generalize this with a static class or something like that
     constructor(arr) {
         this.arr = arr;
         this.states = this.getIterations(this.arr);
@@ -178,7 +87,6 @@ class BubbleStates {
         this.oldRect1 = this.rect1;
         this.oldRect2 = this.rect2;
         this.compare = false;
-
     }
 
     async advance() {
@@ -187,34 +95,36 @@ class BubbleStates {
                     for i = 0; i < n - 1; i++ 
                         for k = i + 1; k < n; k++
         */
-        if (!this.finished) {
 
-            if (this.compare) {
-                if (this.rect2.value < this.rect1.value) {
-                    await this.switchPos();
-                }
-                this.compare = false;
-            } 
-            else {
-                if (this.i < this.n) {
-                    this.oldRect2 = this.rect2;
+        // There's two states:
+        //  1. Comparing two values
+        //  2. Switching positiong of two values
         
-                    if (this.k == this.n) {
-                        this.oldRect1 = this.rect1;
-                        this.i++;
-                        this.k = this.i + 1;
-                    }
-                    else {
-                        this.k++;
-                    }
-                } 
-                else {
-                    this.finished = true;
-                    return;
-                }
-                this.compare = true;
+        if (this.compare) {
+            if (this.rect2.value < this.rect1.value) {
+                await this.switchPos();     // Switch position of the numbers! 
+                
             }
+            this.compare = false;           // Change state
+        } 
+        else {
+            if (this.i < this.n) {
+                this.oldRect2 = this.rect2;
+    
+                if (this.k == this.n) {          // The inner loop has reached its end
+                    this.oldRect1 = this.rect1;
+                    this.i++;
+                    this.k = this.i + 1;        // Increase the outer loop by 1, reset inner to
+                }                               // outer + 1
+                else {
+                    this.k++;                   // Increment inner loop like normal
+                }
+            } 
+            this.compare = true;                // Change state
+        }
 
+        // "Un-Highlights" de old values and highlights the newly selected ones
+        if (this.i < this.n) {                  
             this.oldRect1.unHighlight();
             this.oldRect2.unHighlight();
 
@@ -223,17 +133,30 @@ class BubbleStates {
             this.rect1.highlight();
             this.rect2.highlight();
             c.stroke();
-       }
-
+        } 
+        else {  // Sorting is done
+            this.finished = true;
+        }
     }
 
+    /* Switches position of two values in the array */
     async switchPos() {
         this.arr[this.i] = this.rect2;
         this.arr[this.k] = this.rect1;
         low = this.rect1.x < this.rect2.x ? this.rect1 : this.rect2;
         high = this.rect1.x > this.rect2.x ? this.rect1 : this.rect2;
         goalX = high.x;
-        animate();
+
+        /* There's a limit of where the animation wont look nice if there's
+           too many values or the speed is too high. In this case, the objects
+           simply switch place instantly instead of doing a moving animation */
+        if (speed >= ANIMATION_SPEED_LIMIT) {
+            high.x = low.x;
+            low.x = goalX;
+            display();
+        } else {
+            animate();
+        }
     }
 
     /* The total ammount of iterations is given by
@@ -246,11 +169,13 @@ class BubbleStates {
         }
         return iterations;
     }
-
 }
 
 class Number {
 
+    /* Each number is represented by its value and the height is picked accordingly.
+       The rectangles is given an absolute x & y -value which it's drawned relative to.
+       This makes moving the rectangles very easy */
     constructor(value, width, x, y) {
         this.value = value;
         this.width = width;
@@ -260,16 +185,20 @@ class Number {
         this.highlighted = false;
     }
 
+    /* Marks the number */
     highlight() {
         this.highlighted = true;
         this.draw();
     }
 
+    /* Unmarks the number */
     unHighlight() {
         this.highlighted = false;
         this.draw();
     }
 
+    /* Draws the rectangle with the appropiate color (depending on if it's
+       highlighted or not, and the correct value                        */
     draw() {
         c.beginPath();
         c.fillStyle = this.highlighted ? HIGHLIGHT_COLOR : FILL_COLOR;
@@ -277,53 +206,53 @@ class Number {
 
         c.fillStyle = TEXT_COLOR;
         c.textAlign = 'center';
-        c.font = '20px Courier';
+        c.font = numberTextSize + 'px Courier';
         c.fillText(this.value, this.x + (this.width / 2), 
                 this.y + (this.height / 2));
         c.stroke();
     }
 }
 
+/* ---------- FUNCTIONS ----------------- */
+
+/* Shuffles the array in random order */
+function shuffle() {
+    for (i = arr.length - 1; i > 0; i--) {
+        let randomNumber = Math.floor(Math.random() * (i));
+        let temp = arr[i].x;
+        arr[i].x = arr[randomNumber].x;
+        arr[randomNumber].x = temp;
+    }
+    display();
+}
+
+/* Performs switching animation of two objects */
 function animate(timestamp) {
+
     let id = requestAnimationFrame(animate);
     if (low.x >= goalX) {
         cancelAnimationFrame(id);
     }
     else {
+        // Correction if the distance to move is less than the speed (step size)
+        speed = goalX - low.x < speed ? goalX - low.x : SPEED;
+        
         low.x += speed;
         high.x -= speed;
-        c.clearRect(0, 0, WIDTH, HEIGHT);
-        for (const rect of arr) {
-            rect.draw();
-        }
-        c.stroke();
+        display();
     }
 }
 
-
-
-let arr = createArray(min, max, numbers);
-display();
-let bubble = new BubbleStates(arr);
-
-function ad() {
-    bubble.advance();
-}
-
-
-
-
-document.getElementById('debug').addEventListener('click', ad);
-
+/* Clears the canvas and repaints */
 function display() {
-    c.clearRect(0, 0, WIDTH, HEIGHT);
-    for (const rectangle of arr) {
-        rectangle.draw();
+    c.clearRect(0, 0, WIDTH, HEIGHT);       // Clears the canvas
+    for (const rect of arr) {
+        rect.draw();                        // Re-draws all the objects
     }
+    c.stroke();
 }
 
-
-
+/* Creates an array with random nubmers of [MIN - MAX], numbers size */
 function createArray(min, max, numbers) {
     let arr = [];
     for (i = 0; i < numbers; i++) {
@@ -333,8 +262,50 @@ function createArray(min, max, numbers) {
     return arr;
 }
 
-async function bubbleSort() {
-    for (i = 0; i < 10; i++) {
+/* Runs the bubbleSort algorithm */
+function runBubblesort() {
+    if (bubble.finished) {
+        clearInterval(id);
+    } else {
         bubble.advance();
-    }   
+    }
 }
+
+/* Updates the array of numbers */
+function updateArray() {
+    arr = createArray(min, max, arraySize);
+    numberTextSize = 20 - arraySize / 5;
+    bubble = new BubbleStates(arr);
+    display();
+}
+
+/* Callback from button. 
+    TODO: Need generilasation */
+function bubbleSort() {
+    id = setInterval(runBubblesort, delay);
+}
+
+
+/* Callback functions from input */
+function valueSliderCallback() {
+    max = valueSlider.value;
+    updateArray();
+}
+
+function sizeSliderCallback() {
+    arraySize = sizeSlider.value;
+    updateArray();
+}
+
+function speedSliderCallback() {
+    speed = speedSlider.value;
+    delay = DEFAULT_DELAY - speed * 1.5;
+    console.log(speed);
+}
+
+
+/* Init */
+let id;
+let arr = createArray(min, max, arraySize);
+let bubble = new BubbleStates(arr);
+display();

@@ -11,3 +11,12 @@ canvas {
 .sorting {
     margin-top: 150px;
 }
+
+#scrollbar{
+    display: inline-block;
+    height: 100px;
+    width: 20px;
+    overflow: scroll;
+    position: ;
+}
+

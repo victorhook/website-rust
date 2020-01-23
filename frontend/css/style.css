@@ -4,10 +4,12 @@ html {
     position: relative;
     min-height: 100%;
     font-family: 'Solway', serif;
+    background: linear-gradient(180deg, #0E1E4D 0%,  white 100%);
 }
 
 body {
     margin: 0 0 100px;
+    text-align: center;
 }
 
 .navbar {
@@ -121,14 +123,17 @@ body {
 
 
 .contact {
-    width: 70%;
-    text-align: center;
-    margin: 220px 15% auto 15%;
-}
+    margin-top: 220px;
+    display: inline-block;
+}   
 
 .contact .message {
     width: 400px;
     height: 150px;
+}
+
+.contact .small_boxes {
+    display: inline-block;
 }
 
 .contact .small_boxes input {
@@ -141,17 +146,18 @@ body {
 
 .contact #submit_btn {
     font-family: 'Solway', serif;
+    color: black;
     font-size: 20px;
     width: 100px;
     height: 40px;
     background:  rgba(156, 155, 151, 0.726);
     border: solid 1px gray;
     transition: color .4s, border .4s;
+    border-radius: 10%;
 }
 
 .contact #submit_btn:hover {
     color: white;
-    transform: rotate(20);
     border: solid 1px white;
 }
 

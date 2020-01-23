@@ -8,10 +8,26 @@
 
     <div class='sorting'>
 
+        <textarea></textarea>
         <canvas></canvas> <br>
         <button>Shuffle</button>
         <button id='sort'>Sort</button>
         <button id='debug'>STEP</button>
+
+        <form>
+            <input type="range" min="5" value="15" max="50" id="sizeSlider" oninput="sizeSliderText.value = sizeSlider.value">
+            <output id="sizeSliderText">15</output>
+        </form>
+
+        <form>
+            <input type="range" min="10" value="100" max="200" id="valueSlider" oninput="valueSliderText.value = valueSlider.value">
+            <output id="valueSliderText">100</output>
+        </form>
+
+        <form>
+            <input type="range" min="1" value="25" max="50" id="speedSlider" oninput="speedSliderText.value = speedSlider.value">
+            <output id="speedSliderText">25</output>
+        </form>
 
     </div>
     
